@@ -1,0 +1,19 @@
+scheme: m4i
+format: application/jsonld
+description: a minimal metadata schema for m4i
+reference:
+
+mapping:
+   # map codemeta tsv target keys
+   - target_key:
+     source_key: m4i:ProcessingStep[*]
+   - target_key:
+     source_key: m4i:ProcessingStep#obo:RO_0002234
+   - target_key:
+     source_key: m4i:hasEmployedTool
+   - target_key:
+     source_key: m4i:Tool
+   - target_key:
+     source_key: m4i:Tool#rdfs:label
+   - target_key:
+     source_key: m4i:hasEmployedTool#rdfs:label
