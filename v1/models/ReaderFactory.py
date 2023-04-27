@@ -269,12 +269,40 @@ class JSONLDReader(Reader):
         g.parse(jsonld_data, format="json-ld")
         v = g.serialize(format="json-ld")
         key_values = {}
-        for key in mapping:
-            if "#" in key:
+        list_of_source_keys = mapping.get_source_keys()
+        list_of_source_keys = list(dict.fromkeys(list_of_source_keys))
+        #print(list_of_source_keys)
+        for key in list_of_source_keys:
+            parent=""
+            child=""
+
+            if "[*]" in key:
+                parent = key.replace("[*]", "")
+                # if parent not in key_values:
+
+            elif "#" in key:
                 #print(key)
                 parent, child = key.split("#")
+            else :
+                parent=key
+            # key_values[parent]=[]
+            #print(parent)
+            if parent !="":
+                #print("first loop:", parent)
                 if parent not in key_values:
                     key_values[parent]=[]
+                parent_query = (
+                        """SELECT ?subj ?prop ?obj
+                        WHERE {
+                           ?subj ?prop ?obj .
+                           ?subj ?prop """
+                        + parent
+                        + """
+                        }"""
+                    )
+
+                if child !="" :
+                    #print(child)
                     child_query = (
                         """SELECT ?subj ?prop ?obj
                         WHERE {
@@ -282,16 +310,6 @@ class JSONLDReader(Reader):
                            ?subj """
                         + child
                         + """ ?obj
-                        }"""
-                    )
-
-                    parent_query = (
-                        """SELECT ?subj ?prop ?obj
-                        WHERE {
-                           ?subj ?prop ?obj .
-                           ?subj ?prop """
-                        + parent
-                        + """
                         }"""
                     )
                     objects = {}
@@ -310,5 +328,11 @@ class JSONLDReader(Reader):
                                     else:
                                         objects[ps] = [temp]
                     key_values[parent].append(objects)
+                else:
+                    for row in g.query(parent_query):
+                        s = row.subj.toPython()
+                        o = row.obj.toPython()
+                        #print(row)
+                        key_values[parent].append(s)
         return key_values
 
