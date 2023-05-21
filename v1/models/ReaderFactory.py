@@ -35,13 +35,12 @@ class Reader(metaclass=ABCMeta):
 
 class TextReader(Reader):
     """ Reads *.txt file, extracts source keys and values, and returns source_key_value dictionary. """
+
     def __init__(self):
         pass
 
-
     def __repr__(self):
         pass
-
 
     def read(text_data, mapping):
         """ Reads input line by line and checks if source_key is in translators_dict of scheme.
@@ -67,7 +66,8 @@ class TextReader(Reader):
                 splitted_line = line.split(":")
                 source_key = splitted_line[0]
                 if source_key not in list_of_source_keys:
-                    g.warnings.append(source_key + " not found in scheme mapping - Check your Yaml Mapping File")
+                    g.warnings.append(
+                        source_key + " not found in scheme mapping - Check your Yaml Mapping File")
                     continue
                 values = splitted_line[1]
                 splitted_values = values.split(',')
@@ -79,19 +79,19 @@ class TextReader(Reader):
                         else:
                             source_key_value[source_key].append(value.strip())
                 else:
-                    source_key_value[source_key] = [splitted_values[0].strip()]   #single value
+                    source_key_value[source_key] = [
+                        splitted_values[0].strip()]  # single value
         return source_key_value
 
 
 class XMLReader(Reader):
     """ Reads *.xml file, extracts source keys and values, and returns source_key_value dictionary. """
+
     def __init__(self):
         pass
 
-
     def __repr__(self):
         pass
-
 
     def read(xml_data, mapping):
         """ Goes through source keys of mapping, and extracts values from xml file.
@@ -109,22 +109,25 @@ class XMLReader(Reader):
         """
         # get all source keys of scheme
         list_of_source_keys = mapping.get_source_keys()
-        list_of_source_keys = list(dict.fromkeys(list_of_source_keys))  #remove duplicates
+        list_of_source_keys = list(dict.fromkeys(
+            list_of_source_keys))  # remove duplicates
         # get namespaces
         namespaces = mapping.namespaces
         root = ET.fromstring(xml_data)
         source_key_value = {}
         for source_key in list_of_source_keys:
-            #print(source_key)
-            if source_key.count("/") > 2 and source_key.count("@") == 0:        # case nested source_key
+            # print(source_key)
+            # case nested source_key
+            if source_key.count("/") > 2 and source_key.count("@") == 0:
                 main_key = source_key.rsplit("/", 1)[0]
             else:
                 main_key = source_key
             try:
                 elements = root.xpath("." + main_key, namespaces=namespaces)
-                #print("elements: ",elements)
+                # print("elements: ",elements)
             except:
-                g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
+                g.warnings.append(
+                    source_key + " not a valid X-Path. Please check your YAML File.")
                 continue
             if len(elements) > 0:
                 if isinstance(elements[0], str):
@@ -132,7 +135,8 @@ class XMLReader(Reader):
                         values.append(elements[i])
                     source_key_value[source_key] = values
                     continue
-                elif len(elements[0].text.rstrip().lstrip()) > 0:   # single (compound) source_key
+                # single (compound) source_key
+                elif len(elements[0].text.rstrip().lstrip()) > 0:
                     values = []
                     for i in range(len(elements)):
                         values.append(elements[i].text)
@@ -140,41 +144,42 @@ class XMLReader(Reader):
                 else:                                   # multiple compound source_key
                     number_of_childs = len(elements)
                     parent = main_key
-                    child = source_key.rsplit("/",1)[1]
+                    child = source_key.rsplit("/", 1)[1]
                     values = []     # values of source_key
                     if number_of_childs == 1:
-                        value = root.xpath("." + parent  + "/" + child, namespaces=namespaces)
+                        value = root.xpath(
+                            "." + parent + "/" + child, namespaces=namespaces)
                         if len(value) > 0:
                             for i in range(len(value)):
                                 values.append(value[i].text)
                         else:
                             values.append('none')
                         source_key_value[source_key] = values
-                        #print(values)
+                        # print(values)
                     else:
                         for i in range(number_of_childs):
                             i += 1
-                            value = root.xpath("." + parent + "[" + str(i) + "]" + "/" + child, namespaces=namespaces)
-                            #print("." + parent + "[" + str(i) + "]" + "/" + child)
+                            value = root.xpath(
+                                "." + parent + "[" + str(i) + "]" + "/" + child, namespaces=namespaces)
+                            # print("." + parent + "[" + str(i) + "]" + "/" + child)
 
                             if len(value) > 0:
                                 values.append(value[0].text)
                             else:
                                 values.append('none')
                             source_key_value[source_key] = values
-                            #print(values)
+                            # print(values)
         return source_key_value
 
 
 class JSONReader(Reader):
     """ Reads *.json file, extracts source keys and values, and returns source_key_value dictionary. """
+
     def __init__(self):
         pass
 
-
     def __repr__(self):
         pass
-
 
     def read(json_data, mapping):
         """ Goes through source keys of mapping, and extracts values from json file.
@@ -192,7 +197,8 @@ class JSONReader(Reader):
         """
         json_input = json.loads(json_data)
         list_of_source_keys = mapping.get_source_keys()
-        list_of_source_keys = list(dict.fromkeys(list_of_source_keys))  #remove duplicates
+        list_of_source_keys = list(dict.fromkeys(
+            list_of_source_keys))  # remove duplicates
         source_key_value = {}
         for source_key in list_of_source_keys:
             d_key, main_key = None, None
@@ -201,33 +207,38 @@ class JSONReader(Reader):
             # field selectors already have correct num of elements so we skip the logic below
             if source_key.endswith(")") or "[*]" not in source_key:
                 try:
-                    elements = JSONPath("$.{}".format(source_key)).parse(json_input)
+                    elements = JSONPath("$.{}".format(
+                        source_key)).parse(json_input)
                 except:
                     g.warnings.append(
                         source_key + " not a valid JSON-Path. Please check your mapping config file.")
                     continue
-            #TODO: should also work with ".*" (not only [*])
+            # TODO: should also work with ".*" (not only [*])
             else:                     # multiple compound source_key
-                main_key = source_key.split(".",1)[0]
+                main_key = source_key.split(".", 1)[0]
                 try:
-                    elements = JSONPath("$.{}".format(main_key)).parse(json_input)
-                except: #TODO: forward concrete jsonpath exeption to the user
-                    g.warnings.append(source_key + " not a valid JSON-Path. Please check your YAML File.")
+                    elements = JSONPath("$.{}".format(
+                        main_key)).parse(json_input)
+                except:  # TODO: forward concrete jsonpath exeption to the user
+                    g.warnings.append(
+                        source_key + " not a valid JSON-Path. Please check your YAML File.")
                     continue
-            if len(elements) > 0: # if we found something
+            if len(elements) > 0:  # if we found something
                 # single (compound) source_key or
                 # field selectors that has already correct num of elements
                 if main_key is None and (isinstance(elements[0], str) or source_key.endswith(")")):
                     values = elements
-                elif main_key is None and isinstance(elements[0], list):  # single (compound) source_key
+                # single (compound) source_key
+                elif main_key is None and isinstance(elements[0], list):
                     values = elements[0]
                 else:                               # multiple compound source_key
                     number_of_childs = len(elements)
-                    parent = source_key.split("[*]",1)[0]
-                    child = source_key.split(".",1)[1]
+                    parent = source_key.split("[*]", 1)[0]
+                    child = source_key.split(".", 1)[1]
                     values = []     # values of source_key
                     for i in range(number_of_childs):
-                        value = JSONPath("$.{}[{}].{}".format(parent,i,child)).parse(json_input)
+                        value = JSONPath("$.{}[{}].{}".format(
+                            parent, i, child)).parse(json_input)
                         if len(value) > 0:
                             values.append(value[0])
                         else:
@@ -235,7 +246,8 @@ class JSONReader(Reader):
                     if all(['none' == elem for elem in values]):
                         continue
                 if d_key:
-                    source_key_value["{}#{}".format(d_key, source_key)] = {d_key: values}
+                    source_key_value["{}#{}".format(d_key, source_key)] = {
+                        d_key: values}
                 else:
                     source_key_value[source_key] = values
         return source_key_value
@@ -243,12 +255,12 @@ class JSONReader(Reader):
 
 class JSONLDReader(Reader):
     """ Reads *.jsonld file, extracts source keys and values, and returns source_key_value dictionary. """
+
     def __init__(self):
         pass
 
     def __repr__(self):
         pass
-
 
     def read(jsonld_data, mapping):
         """ Goes through source keys of mapping, and extracts values from json file.
@@ -271,27 +283,47 @@ class JSONLDReader(Reader):
         key_values = {}
         list_of_source_keys = mapping.get_source_keys()
         list_of_source_keys = list(dict.fromkeys(list_of_source_keys))
-        #print(list_of_source_keys)
-        for key in list_of_source_keys:
-            parent=""
-            child=""
+        for source_key in list_of_source_keys:
+           # print(source_key)
+            elements = []
+            main_key = ""
+            if "#" in source_key:      # case nested source_key
+                # main_key = source_key.rsplit("#", 1)[0]
+                elements = source_key.split("#")
 
-            if "[*]" in key:
-                parent = key.replace("[*]", "")
-                # if parent not in key_values:
+            elif "*" in source_key:
+                main_key = source_key.replace("[*]", "")
+            else:
+                main_key = source_key
 
-            elif "#" in key:
-                #print(key)
-                parent, child = key.split("#")
-            else :
-                parent=key
-            # key_values[parent]=[]
-            #print(parent)
-            if parent !="":
-                #print("first loop:", parent)
-                if parent not in key_values:
-                    key_values[parent]=[]
-                parent_query = (
+            if main_key != "":
+                if main_key not in key_values:
+                    key_values[main_key] = []
+                    main_query = (
+                        """SELECT ?subj ?prop ?obj
+                              WHERE {
+                                 ?subj ?prop ?obj .
+                                 ?subj ?prop """
+                        + main_key
+                        + """
+                              }"""
+                    )
+                    for row in g.query(main_query):
+                        s = row.subj.toPython()
+                        o = row.obj.toPython()
+                        # print(row)
+                        key_values[main_key].append([s])
+            if len(elements) > 1:
+                # print("element: ", elements)
+                # print(len(elements))
+                parent_temp = {}
+                parent_key_order = []
+                for i in range(0, len(elements)-1):
+
+                    parent = elements[i]
+                    child = elements[i+1]
+
+                    parent_query = (
                         """SELECT ?subj ?prop ?obj
                         WHERE {
                            ?subj ?prop ?obj .
@@ -301,8 +333,6 @@ class JSONLDReader(Reader):
                         }"""
                     )
 
-                if child !="" :
-                    #print(child)
                     child_query = (
                         """SELECT ?subj ?prop ?obj
                         WHERE {
@@ -312,27 +342,106 @@ class JSONLDReader(Reader):
                         + """ ?obj
                         }"""
                     )
-                    objects = {}
-                    for row in g.query(parent_query):
-                        s = row.subj.toPython()
-                        for row2 in g.query(child_query):
-                            o = row2.obj.toPython()
-                            s2 = row2.subj.toPython()
-                            #print(o)
-                            for ps, cs in [(s, s2)]:
-                                if ps == cs:
-                                    temp={}
-                                    temp[child]=o
-                                    if ps in objects:
-                                        objects[ps].append(temp)
-                                    else:
-                                        objects[ps] = [temp]
-                    key_values[parent].append(objects)
-                else:
-                    for row in g.query(parent_query):
-                        s = row.subj.toPython()
-                        o = row.obj.toPython()
-                        #print(row)
-                        key_values[parent].append(s)
-        return key_values
+                    # objects = {}
+                    temp = {}
+                    key_order = []
 
+                    for row in g.query(parent_query):
+                        s = row.subj.toPython()
+                        temp[s] = None
+                        key_order.append(s)
+                        # if parent=="m4i:Tool":
+                        #     print(row, "\n")
+                    for row in g.query(child_query):
+                        o = row.obj.toPython()
+                        s = row.subj.toPython()
+                        p = row.subj.toPython()
+                        # print(row)
+                        # if source_key=="m4i:ProcessingStep#obo:RO_0000057":
+                        #     print(parent,child ,"\n",row)
+                        if s in temp:
+                            if temp[s] == None:
+                                temp[s] = str(o)
+                            else:
+                                temp[s].append(str(o))
+                    key_values[source_key] = []
+                    # print("temp:" ,temp)
+                    for key in key_order:
+                        # print(child)
+                        # print("key: ", key)
+                        # print("value: ", temp[key])
+                        if temp[key] == None:
+                            key_values[source_key].append(["none"])
+                        else:
+                            key_values[source_key].append([temp[key]])
+                    parent_temp = temp
+                    parent_key_order = key_order
+        #print(key_values)
+        print(json.dumps(key_values, indent=4))
+        # print("key_ values: ", key_values)
+        #             key_values[parent].append(objects)
+
+        # print(list_of_source_keys)
+        # for key in list_of_source_keys:
+        #     parent=""
+        #     child=""
+
+        #     if "[*]" in key:
+        #         parent = key.replace("[*]", "")
+        #         # if parent not in key_values:
+
+        #     elif "#" in key:
+        #         #print(key)
+        #         parent, child = key.split("#")
+        #     else :
+        #         parent=key
+        #     # key_values[parent]=[]
+        #     #print(parent)
+        #     if parent !="":
+        #         #print("first loop:", parent)
+        #         if parent not in key_values:
+        #             key_values[parent]=[]
+        #         parent_query = (
+        #                 """SELECT ?subj ?prop ?obj
+        #                 WHERE {
+        #                    ?subj ?prop ?obj .
+        #                    ?subj ?prop """
+        #                 + parent
+        #                 + """
+        #                 }"""
+        #             )
+
+        #         if child !="" :
+        #             #print(child)
+        #             child_query = (
+        #                 """SELECT ?subj ?prop ?obj
+        #                 WHERE {
+        #                    ?subj ?prop ?obj .
+        #                    ?subj """
+        #                 + child
+        #                 + """ ?obj
+        #                 }"""
+        #             )
+        #             objects = {}
+        #             for row in g.query(parent_query):
+        #                 s = row.subj.toPython()
+        #                 for row2 in g.query(child_query):
+        #                     o = row2.obj.toPython()
+        #                     s2 = row2.subj.toPython()
+        #                     #print(o)
+        #                     for ps, cs in [(s, s2)]:
+        #                         if ps == cs:
+        #                             temp={}
+        #                             temp[child]=o
+        #                             if ps in objects:
+        #                                 objects[ps].append(temp)
+        #                             else:
+        #                                 objects[ps] = [temp]
+        #             key_values[parent].append(objects)
+        #         else:
+        #             for row in g.query(parent_query):
+        #                 s = row.subj.toPython()
+        #                 o = row.obj.toPython()
+        #                 #print(row)
+        #                 key_values[parent].append(s)
+        return key_values

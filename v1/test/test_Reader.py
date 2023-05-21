@@ -37,45 +37,6 @@ class TestReader(unittest.TestCase):
         self.assertEqual(["IAG","none","IMS"], source_key_value.get("creator.affiliation.name"))
         self.assertNotEqual(["German", "English"], source_key_value.get("subjects.subject.lang"))
 
-    def get_values(self,data):
-        values = []
-        if isinstance(data, dict):
-            for key, value in data.items():
-                if key == "obo:RO_0002234":
-                    values.append(value)
-                else:
-                    values.extend(self.get_values(value))
-        elif isinstance(data, list):
-            for item in data:
-                values.extend(self.get_values(item))
-        return values
-
-
-    def get_nested_dict_values(self,data, nested_dict_key, value_key):
-        values = []
-        for key, value in data.items():
-            # print(key)
-            print("value", value)
-            if isinstance(value, dict):
-                print(value)
-                if nested_dict_key in item:
-                        print(nested_dict_key)
-                # values.extend(nested_values)
-            elif isinstance(value, list):
-                for item in value:
-                    # print(item)
-                    if isinstance(item, dict):
-                        nested_values = self.get_nested_dict_values(item, nested_dict_key, value_key)
-
-                    # print(item)
-                    # elif
-                    #  nested_dict_key in item:
-                    #     print(nested_dict_key)
-                    #     for nested_item in item[nested_dict_key]:
-                    #         if value_key in nested_item:
-                    #             values.append(nested_item[value_key])
-        return values
-
 
 
     def test_JsonLdReader(self):
@@ -88,7 +49,8 @@ class TestReader(unittest.TestCase):
         #     "m4i:hasEmployedTool#rdfs:label",
         # ]
         sample_keys=[]
-        expected_dict = {'m4i:ProcessingStep': ['local:measurement_0001', 'local:temp_measurement_0001', 'local:pressure_measurement_0001', 'local:analysis_0001', {'local:measurement_0001': [{'obo:RO_0002234': 'local:raw_data'}], 'local:temp_measurement_0001': [{'obo:RO_0002234': 'local:temperature_data'}], 'local:pressure_measurement_0001': [{'obo:RO_0002234': 'local:pressure_data'}], 'local:analysis_0001': [{'obo:RO_0002234': 'local:analysed_data'}]}], 'm4i:hasEmployedTool': [{}], 'm4i:Tool': ['local:hardware_assembly', 'local:temperature_sensor', 'local:pressure_sensor', {'local:hardware_assembly': [{'rdfs:label': 'Hardware Assembly'}], 'local:temperature_sensor': [{'rdfs:label': 'temperature sensor'}], 'local:pressure_sensor': [{'rdfs:label': 'pressure sensor'}]}]}
+        expected_dict= {'m4i:ProcessingStep': [['local:measurement_0001'], ['local:temp_measurement_0001'], ['local:pressure_measurement_0001'], ['local:analysis_0001']], 'm4i:ProcessingStep#obo:RO_0002234': [['local:raw_data'], ['local:temperature_data'], ['local:pressure_data'], ['local:analysed_data']], 'm4i:hasEmployedTool': [], 'm4i:Tool': [['local:hardware_assembly'], ['local:temperature_sensor'], ['local:pressure_sensor']], 'm4i:ProcessingStep#m4i:Tool#rdfs:label': [['Hardware Assembly'], ['temperature sensor'], ['pressure sensor']], 'm4i:ProcessingStep#m4i:hasEmployedTool': [['local:hardware_assembly'], ['local:temperature_sensor'], ['local:pressure_sensor'], ['none']], 'm4i:ProcessingStep#m4i:realizesMethod#rdfs:label': [], 'm4i:ProcessingStep#obo:RO_0000057': [['local:alex'], ['none'], ['none'], ['local:doris']], 'm4i:ProcessingStep#schema:startTime': [['2022-03-01T09:03:01'], ['2022-03-01T09:03:01'], ['2022-03-10T13:35:11'], ['2022-03-14T09:15:00']]}
+
         path = './input/test.jsonld'
         test_input = open(path,'r')
         jsonld_reader= ReaderFactory.create_reader('application/jsonld')
@@ -110,18 +72,7 @@ class TestReader(unittest.TestCase):
             for i, item in enumerate(actual_value):
                 self.assertEqual(item, expected_value[i])
 
-            # Check individual values of the actual dictionary using assert statements
-        # self.assertEqual(source_key_value['m4i:ProcessingStep'][0]['local:measurement_0001'][0]['obo:RO_0002234'], 'local:raw_data')
-        # self.assertEqual(source_key_value['m4i:ProcessingStep'][0]['local:temp_measurement_0001'][0]['obo:RO_0002234'], 'local:temperature_data')
-        # self.assertEqual(source_key_value['m4i:ProcessingStep'][0]['local:pressure_measurement_0001'][0]['obo:RO_0002234'], 'local:pressure_data')
-        # self.assertEqual(source_key_value['m4i:ProcessingStep'][0]['local:analysis_0001'][0]['obo:RO_0002234'], 'local:analysed_data')
-        # self.assertEqual(source_key_value['m4i:Tool'][0]['local:hardware_assembly'][0]['rdfs:label'], 'Hardware Assembly')
-        # self.assertEqual(source_key_value['m4i:Tool'][0]['local:temperature_sensor'][0]['rdfs:label'], 'temperature sensor')
-        # self.assertEqual(source_key_value['m4i:Tool'][0]['local:pressure_sensor'][0]['rdfs:label'], 'pressure sensor')
-        # self.assertEqual(source_key_value['m4i:hasEmployedTool'], [{}])
-        # print(json.dumps(source_key_value, indent=4))
-        # print(self.get_values(source_key_value))
-        #print(source_key_value)
+
         list_of_source_keys = self.jsonldmapping.get_source_keys()
         list_of_source_keys = list(dict.fromkeys(list_of_source_keys))
         #print(list_of_source_keys)

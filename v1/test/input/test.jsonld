@@ -517,7 +517,7 @@
                     "@id": "local:pressure_measurement_0001",
                     "@type": "processing step",
                     "start time": "2022-03-10T13:35:11",
-                    "has employed tool": "local:pressure_sensor",
+                    "has employed tool":"local:pressure_sensor",
                     "investigates": {
                         "@id": "local:pressure",
                         "@type": "variable"
