@@ -20,8 +20,6 @@ mapping:
      source_key: m4i:ProcessingStep#m4i:realizesMethod#rdfs:label
    - target_key: authorName
      source_key: m4i:ProcessingStep#obo:RO_0000057
-   - target_key: processStepOutput
-     source_key: m4i:ProcessingStep#obo:RO_0002234#?
    - target_key: processStepDate
      source_key: m4i:ProcessingStep#schema:startTime
 
