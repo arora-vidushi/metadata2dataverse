@@ -1,11 +1,11 @@
-import validators #for checking url and email 
+import validators #for checking url and email
 import re
 from datetime import datetime
 from flask import g
 class Field(object):
     ''' object after parsing a tsv file '''
-    
-    
+
+
     def __init__(self, target_key, multiple, type_class, parent, metadata_block, field_type):
         ''' Constructor '''
         self.target_key = target_key
@@ -15,12 +15,21 @@ class Field(object):
         self.parent = parent
         self.metadata_block = metadata_block
         self.field_type = field_type
-        
-        
+
+
     def __repr__(self):
         return "{multiple: " + str(self.multiple) + ", type class: " + self.type_class + ", parent: " + str(self.parent) + ", metadata block: " + self.metadata_block + ", controlled Vocabulary: " + str(self.controlled_vocabulary) +"}"
-        
-        
+
+    def flatten_list(self,lst):
+        flattened = []
+        for item in lst:
+            if isinstance(item, list):
+                flattened.extend(self.flatten_list(item))  # Recursively flatten inner lists
+            else:
+                flattened.append(item)
+        return flattened
+
+
     def set_controlled_vocabulary(self, controlled_vocabulary):
         self.controlled_vocabulary.append(controlled_vocabulary)
 
@@ -29,6 +38,7 @@ class Field(object):
         if(not isinstance(values, list)):
             values = [values]
         valid = True
+        values=self.flatten_list(values)
         for value in values:
             if self.field_type == "url":
                 valid = valid and validators.url(value)
@@ -37,6 +47,7 @@ class Field(object):
                 valid = valid and validators.email(value)
 
             elif self.field_type == "date":
+                print(value)
                 if re.fullmatch("\d{4}-\d{2}-\d{2}", value):
                     format_d = "%Y-%m-%d"
                 elif re.fullmatch("\d{4}-\d{2}", value):
@@ -58,7 +69,7 @@ class Field(object):
                     valid = valid and True
                 except ValueError:
                     valid = False
-                
+
 
             elif self.field_type == "float":
                 try:
@@ -77,18 +88,18 @@ class Field(object):
                     if '\n' in value:
                         value.replace('\n', ' ')
                     valid = valid and True
-        return valid        
-    
-        
-    def check_controlled_vocabulary(self, v):     
-        """ Checks value v against controlled_vocabulary list. 
-        
+        return valid
+
+
+    def check_controlled_vocabulary(self, v):
+        """ Checks value v against controlled_vocabulary list.
+
         Returns v if it is in controlled_vocabulary, else []. Ignores 'none' values.
-        
+
         Parameters
         ---------
         v : str
-        
+
         Returns
         ---------
         v : str or []
@@ -100,16 +111,15 @@ class Field(object):
                     v_new.append(value_)
                 elif value_ != 'none':
                     g.warnings.append(self.target_key + " has a controlled vocabulary. " + value_ + " is not part of it. It has been removed. Allowed values are: " + str(self.controlled_vocabulary))
-                else:    
+                else:
                     continue
             return v_new
-        else:               
+        else:
             v = v[0]
-            if v in self.controlled_vocabulary:      
+            if v in self.controlled_vocabulary:
                 return v
             elif v != 'none':
                 g.warnings.append(self.target_key + " has a controlled vocabulary. " + v +" is not part of it. It has been removed. Allowed values are: " + str(self.controlled_vocabulary))
                 return []
             else:
                 return []
-    

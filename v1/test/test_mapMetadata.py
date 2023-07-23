@@ -35,8 +35,8 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         url = "{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset)
         #print(response.json)
-        print("url:", url)
-        print(json.dumps(response.json))
+        #print("url:", url)
+        #print(json.dumps(response.json))
         x = requests.put(
             url,
             data=json.dumps(response.json),
