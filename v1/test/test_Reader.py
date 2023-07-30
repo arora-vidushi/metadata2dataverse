@@ -36,7 +36,7 @@ class TestReader(unittest.TestCase):
         self.assertEqual(["Björn", "none", "Björn"], source_key_value.get("creator.givenName"))
         self.assertEqual(["IAG","none","IMS"], source_key_value.get("creator.affiliation.name"))
         self.assertNotEqual(["German", "English"], source_key_value.get("subjects.subject.lang"))
-        #print(source_key_value)
+        print(source_key_value)
 
     def test_JsonLdReader(self):
         # sample_keys = [

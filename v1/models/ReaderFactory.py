@@ -342,11 +342,11 @@ class JSONLDReader(Reader):
                         # print("key: ", key)
                         # print("value: ", temp[key])
                         if temp[key] == None:
-                            key_values[source_key].append("none")
+                            key_values[source_key].append('none')
                         else:
                             key_values[source_key].append(temp[key])
                     parent_temp = temp
                     parent_key_order = key_order
         #print(key_values)
-        #print(json.dumps(key_values, indent=4))
+        print(json.dumps(key_values, indent=4))
         return key_values
