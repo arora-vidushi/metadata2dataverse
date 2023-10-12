@@ -19,7 +19,7 @@ class TestEndpointGetEmpty(unittest.TestCase):
     def test_empty_metadata_harvester(self):
         response = self.client.get('/metadata/harvester')
         self.assertEqual(response.status_code, 200)
-        
+
     def test_empty_metadata_engmeta(self):
         response = self.client.get('/metadata/engmeta')
         self.assertEqual(response.status_code, 200)
@@ -35,6 +35,10 @@ class TestEndpointGetEmpty(unittest.TestCase):
 
     def test_empty_metadata_datacite(self):
         response = self.client.get('/metadata/datacite')
+        self.assertEqual(response.status_code, 200)
+
+    def test_empty_metadata_datacite(self):
+        response = self.client.get('/metadata/m4i')
         self.assertEqual(response.status_code, 200)
 
     def test_empty_metadata_codemeta_edit(self):
@@ -54,4 +58,4 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("datasetVersion", response.json)
 
-        
+

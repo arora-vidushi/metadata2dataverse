@@ -22,4 +22,55 @@ mapping:
      source_key: m4i:ProcessingStep#obo:RO_0000057
    - target_key: processStepDate
      source_key: m4i:ProcessingStep#schema:startTime
+     type: date
 
+
+
+#  - target_key: processMethods
+#      source_key: obo:BFO_0000015 #otherwise m4i:Method
+#    - target_key: processMethodsName
+#      source_key: obo:BFO_0000015#rdfs:label #process
+#    - target_key: processMethodsPars
+#      source_key: obo:BFO_0000015#m4i:hasParameter
+#    - target_key: processMethodsDescription
+#      source_key: obo:BFO_0000015#m4i:hasVariableDescription
+#    - target_key: processMethodsParSymbol
+#      source_key: obo:BFO_0000015#m4i:hasSymbol
+#    - target_key: processMethodsParUnit
+#      source_key: obo:BFO_0000015#m4i:hasParameter#m4i:hasUnit
+#    - target_key: processMethodsParUnit
+#      source_key: obo:BFO_0000015#m4i:hasParameter#m4i:hasUnit
+#    - target_key: processMethodsParValue
+#      source_key: obo:BFO_0000015#m4i:hasParameter#pims-ii:Value
+#    - target_key: processSoftware
+#      source_key: #?
+#    - target_key: processInstru
+#      source_key: m4i:ProcessingStep#schema:instrument # otherwise m4i:Tool
+#    - target_key: processInstruName
+#      source_key: m4i:ProcessingStep#m4i:Tool#rdfs:label
+#    - target_key: processInstruDescr
+#      source_key: m4i:ProcessingStep#m4i:Tool#m4i:hasVariableDescription
+#    - target_key: processInstruType
+#      source_key: sm4i:ProcessingStep#m4i:Tool#ssn:hasProperty
+#    - target_key: processInstruPartnum
+#      source_key: #?
+#    - target_key: processInstruSerialnum
+#      source_key: #?
+#    - target_key: processInstruSoftware
+#      source_key: #?
+#    - target_key: processInstruLocation
+#      source_key: #?
+#    - target_key: processEnv
+#      source_key: #?
+#    - target_key: processStep
+#      source_key: m4i:ProcessingStep#rdfs:label
+#    - target_key: processStepId
+#      source_key: # Create some order using precede/succeed
+#    - target_key: processStepType
+#      source_key: # ?
+#    - target_key: processStepDate
+#      source_key: m4i:ProcessingStep#schema:startTime
+#    - target_key: processStepMethods
+#      source_key: m4i:ProcessingStep#obo:BFO_0000051  #Process step has part
+#    - target_key: processStepErrorMethod
+#      source_key: # ?

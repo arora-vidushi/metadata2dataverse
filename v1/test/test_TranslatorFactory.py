@@ -4,15 +4,15 @@ import sys
 import os
 sys.path.append('..')
 from models.TranslatorFactory import TranslatorFactory
-from models.Translator import BaseTranslator, MergeTranslator, AdditionTranslator
+from models.Translator import BaseTranslator, MergeTranslator, AdditionTranslator, DateTranslator
 
 class TestTranslatorFactory(unittest.TestCase):
     def setUp(self):
         self.f = TranslatorFactory()
-        pass 
-    
-    def test_create_translator(self):      
-        #test engMeta yaml with merge  
+        pass
+
+    def test_create_translator(self):
+        #test engMeta yaml with merge
         t = self.f.create_translator({"source_key": ["/dataset/creator/givenName", "/dataset/creator/familyName"], "target_key": "authorName", "type": "merge", "join_symbol": " ", "priority": 2})
         self.assertEqual(t.source_keys, ["/dataset/creator/givenName", "/dataset/creator/familyName"])
         self.assertEqual(t.target_key, "authorName")
@@ -42,3 +42,7 @@ class TestTranslatorFactory(unittest.TestCase):
         self.assertEqual(t4.priority, 1)
         self.assertEqual(t4.class_name, "DateAdder")
         self.assertEqual(t4.translator_type, "addition")
+        # test date translator
+        t5= self.f.create_translator({"target_key": "processStepDate","source_key": "m4i:ProcessingStep#schema:startTime","type":"date"})
+        self.assertEqual(t5.source_key, "m4i:ProcessingStep#schema:startTime")
+        print(t5.get_value)

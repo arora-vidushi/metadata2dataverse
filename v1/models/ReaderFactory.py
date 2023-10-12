@@ -318,6 +318,7 @@ class JSONLDReader(Reader):
                     key_order = []
 
                     for row in g.query(parent_query):
+                        print("row: ",row)
                         s = row.subj.toPython()
                         temp[s] = None
                         key_order.append(s)
@@ -347,6 +348,9 @@ class JSONLDReader(Reader):
                             key_values[source_key].append(temp[key])
                     parent_temp = temp
                     parent_key_order = key_order
+
+        # Remove keys with empty values (None, empty strings, empty lists, empty dictionaries)
+        key_values = {key: value for key, value in key_values.items() if value}
         #print(key_values)
-        print(json.dumps(key_values, indent=4))
+        #print(json.dumps(key_values, indent=4))
         return key_values
