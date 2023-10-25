@@ -460,7 +460,7 @@ def create_app(test_config=None):
         print("Step Read source_key_values done")
         target_key_values = translate_source_keys(source_key_values, mapping)
         print("Step Translate key values done")
-
+        print("target key values:", target_key_values)
         #resp_url = check_value("Geeksoreeks1", "text")     testing text
 
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN

@@ -63,7 +63,7 @@ class TestReader(unittest.TestCase):
             mapping_file.close()
         # print(sample_keys)
         source_key_value=jsonld_reader.read(test_input,self.jsonldmapping)
-        # print(source_key_value)
+        print(source_key_value)
         #Check each value of the actual and expected dictionaries using assertEqual()
         for key, expected_value in expected_dict.items():
             actual_value = source_key_value.get(key)
@@ -72,6 +72,6 @@ class TestReader(unittest.TestCase):
                 self.assertEqual(item, expected_value[i])
 
 
-        list_of_source_keys = self.jsonldmapping.get_source_keys()
-        list_of_source_keys = list(dict.fromkeys(list_of_source_keys))
+        # list_of_source_keys = self.jsonldmapping.get_source_keys()
+        # list_of_source_keys = list(dict.fromkeys(list_of_source_keys))
 

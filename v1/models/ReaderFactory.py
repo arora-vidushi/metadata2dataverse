@@ -318,7 +318,7 @@ class JSONLDReader(Reader):
                     key_order = []
 
                     for row in g.query(parent_query):
-                        print("row: ",row)
+                        # print("row: ",row)
                         s = row.subj.toPython()
                         temp[s] = None
                         key_order.append(s)
